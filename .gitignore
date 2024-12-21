@@ -1,0 +1,5 @@
+.env
+venv/
+chroma_persistent_storage/
+Gemini.py
+__pycache__

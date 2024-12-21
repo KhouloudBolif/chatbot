@@ -1,0 +1,12 @@
+Flask 
+openai
+chromadb
+python-dotenv
+requests
+PyPDF2
+
+
+
+
+
+
