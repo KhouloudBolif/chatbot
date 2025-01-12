@@ -11,7 +11,7 @@ Vous devez disposer d'une clé API valide d'OpenAI.
 
   1.Cloner le dépôt :
 
-    ```bash
+    
         git clone [lien du dépôt]
 
   2. Accéder au répertoire du projet :
@@ -25,13 +25,13 @@ Vous devez disposer d'une clé API valide d'OpenAI.
 
   5.Builder le container avec Docker Compose :
 
-    ```bash
+   
      docker-compose up --build -d
 
   6.Lancer le projet :
   si le projet deja builder il suffiit de le lancer avec la cmd suivante :
   
-    ```bash
+    
     docker-compose up 
 
     
