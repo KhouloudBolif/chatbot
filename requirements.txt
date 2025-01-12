@@ -4,6 +4,8 @@ chromadb
 python-dotenv
 requests
 PyPDF2
+pymongo[srv]
+pyjwt
 
 
 
