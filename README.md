@@ -7,7 +7,7 @@ L'objectif est de fournir des réponses contextuelles précises en utilisant des
 Clé API OpenAI
 Vous devez disposer d'une clé API valide d'OpenAI.
 
-##Build et Lancer l'application avec Docker
+## Build et Lancer l'application avec Docker
 
   1.Cloner le dépôt :
 
