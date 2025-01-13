@@ -1,7 +1,4 @@
-# Chatbot Partie RAG 
-
-Ce projet fait partie d'un système de Retrieval-Augmented Generation (RAG) pour un Chatbot.
-L'objectif est de fournir des réponses contextuelles précises en utilisant des informations extraitesà partir de données externes.
+# Pour Lancer le Projet :
 
 ## 📌 Prérequis
 Clé API OpenAI
