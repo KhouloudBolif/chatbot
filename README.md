@@ -1,6 +1,15 @@
 # Chatbot de Sécurité
 
 Ce projet consiste à développer un chatbot de sécurité qui répond aux besoins de cybersécurité, tout en intégrant des fonctionnalités avancées comme l'authentification des utilisateurs, la génération de graphes, et la gestion des menaces en réseau.
+ ## Contributeurs
+
+Ce projet a été réalisé par :
+- **Bolif Khouloud**
+- **El Bannouri Khaoula**
+- **Abderrazzak el Bourkadi**
+- **Ayoub Touybi**
+  
+
 
 ## Table des matières
 - [À propos](#à-propos)
@@ -84,13 +93,7 @@ Vous devez disposer d'une clé API valide d'OpenAI.
 
     
 
-  ## Contributeurs
-
-Ce projet a été réalisé par :
-- **Bolif Khouloud**
-- **El Bannouri Khaoula**
-- **Abderrazzak el Bourkadi**
-- **Ayoub Touybi**
+ 
 
 ---
 
