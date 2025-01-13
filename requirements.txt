@@ -7,8 +7,12 @@ PyPDF2
 pymongo[srv]
 pyjwt
 
+torch 
+torchvision 
+torchaudio
+torch-geometric
+joblib
+matplotlib
+networkx
 
-
-
-
-
+flask-cors

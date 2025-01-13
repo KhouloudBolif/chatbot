@@ -1,17 +1,31 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify , send_file
 from pymongo import MongoClient
 from RAG import query_documents, generate_response , index_documents
 from datetime import datetime
-
+import joblib
+import networkx as nx
+from NetworkModel.model import GCN
+import matplotlib.pyplot as plt
+from io import BytesIO
 import uuid
+from NetworkModel.Graph import linear_threshold
+from flask_cors import CORS
 
 app = Flask(__name__)
-
+# Autoriser les requêtes de localhost:4200
+CORS(app, origins=["http://localhost:4200"])
 # Connexion à MongoDB Atlas
 client = MongoClient("mongodb+srv://developer:Chatbot123@cluster0.exyhx.mongodb.net/chatbot?retryWrites=true&w=majority&appName=Cluster0")
 db = client["chatbot"]  # Remplacez par le nom de votre base de données
 collection = db["questions_answers"] 
 sessions_collection = db["sessions"]
+
+#Model de Graph network 
+
+# Charger le modèle et la fonction
+model_data = joblib.load('NetworkModel\model_menace.pkl')
+model = model_data['model']
+linear_threshold = model_data['linear_threshold']
 
 # Endpoint pour ajouter Data dans RAG 
 @app.route('/index', methods=['POST'])
@@ -147,6 +161,71 @@ def get_user_history():
         return jsonify({"user_id": user_id, "history": user_history})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@app.route('/predict', methods=['POST'])
+def predict():
+    data = request.get_json()
+
+    # Charger les données du graphe
+    edges = data['edges']
+    initial_infected = data['initial_infected']
+    node_thresholds = data['node_thresholds']
+
+    # Construire le graphe
+    G = nx.Graph()
+    for src, dst, weight in edges:
+        G.add_edge(src, dst, weight=weight)
+
+    # Appliquer la fonction linear_threshold
+    infected_nodes = linear_threshold(G, initial_infected, node_thresholds)
+
+    return jsonify({'infected_nodes': list(infected_nodes)})
+
+@app.route('/visualize', methods=['POST'])
+def visualize():
+    data = request.get_json()
+
+    # Charger les données du graphe
+    edges = data['edges']
+    initial_infected = data['initial_infected']
+    node_thresholds = data['node_thresholds']
+
+    # Construire le graphe
+    G = nx.Graph()
+    for src, dst, weight in edges:
+        G.add_edge(src, dst, weight=weight)
+
+    # Appliquer la fonction linear_threshold
+    infected_nodes = linear_threshold(G, initial_infected, node_thresholds)
+
+    # Positionner les nœuds
+    pos = nx.spring_layout(G)
+
+    # Créer les couleurs pour les nœuds
+    node_colors = ['red' if node in infected_nodes else 'skyblue' for node in G.nodes]
+
+    # Dessiner le graphe
+    plt.figure(figsize=(8, 6))
+    nx.draw(
+        G,
+        pos,
+        with_labels=True,
+        node_color=node_colors,
+        edge_color='gray',
+        node_size=2000,
+        font_size=12,
+        font_weight='bold'
+    )
+    plt.title("Propagation des menaces dans le réseau")
+
+    # Enregistrer le graphique sur un chemin spécifique
+    image_path = 'graph_images/graph_image.png'  # Remplacez 'path/to/your/directory' par le chemin souhaité
+    plt.savefig(image_path)
+    plt.close()
+   # Générer une image ou charger un fichier existant
+  
+    return send_file(image_path, mimetype='image/png')
+    
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0",debug=True)
