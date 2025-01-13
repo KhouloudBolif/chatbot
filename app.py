@@ -10,7 +10,11 @@ from io import BytesIO
 import uuid
 from NetworkModel.Graph import linear_threshold
 from flask_cors import CORS
-
+import base64
+from PIL import Image
+import traceback
+from bson.objectid import ObjectId
+import io
 app = Flask(__name__)
 # Autoriser les requêtes de localhost:4200
 CORS(app, origins=["http://localhost:4200"])
@@ -19,7 +23,7 @@ client = MongoClient("mongodb+srv://developer:Chatbot123@cluster0.exyhx.mongodb.
 db = client["chatbot"]  # Remplacez par le nom de votre base de données
 collection = db["questions_answers"] 
 sessions_collection = db["sessions"]
-
+collection = db["graph_images"] 
 #Model de Graph network 
 
 # Charger le modèle et la fonction
@@ -133,34 +137,27 @@ def get_session_history():
         return jsonify({"session_id": session_id, "history": history})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    
-@app.route('/user_history', methods=['POST'])
-def get_user_history():
+
+@app.route('/allhistory', methods=['POST'])
+def history():
     try:
-        # Récupérer l'ID utilisateur depuis le corps de la requête
         data = request.get_json()
-        user_id = data.get('user_id', '')
+        session_id = data.get('session_id', '')
 
-        if not user_id:
-            return jsonify({"error": "L'ID utilisateur est requis."}), 400
+        if not session_id:
+            return jsonify({"error": "L'ID de session est requis."}), 400
 
-        # Rechercher toutes les sessions pour cet utilisateur
-        sessions = list(sessions_collection.find({"user_id": user_id}, {"_id": 0}))
+        # Récupérer tous les messages associés à cette session, triés par timestamp décroissant, et limiter à 3 messages
+        history = list(collection.find({"session_id": session_id}, {"_id": 0}).sort("timestamp", -1).limit(3))
 
-        if not sessions:
-            return jsonify({"message": "Aucune session trouvée pour cet utilisateur."}), 404
+        if not history:
+            return jsonify({"message": "Aucun message trouvé pour cette session."}), 404
 
-        # Ajouter les messages de chaque session
-        user_history = []
-        for session in sessions:
-            session_id = session['session_id']
-            messages = list(collection.find({"session_id": session_id}, {"_id": 0}))
-            session['messages'] = messages
-            user_history.append(session)
-
-        return jsonify({"user_id": user_id, "history": user_history})
+        return jsonify({"session_id": session_id, "history": history})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -183,9 +180,9 @@ def predict():
 
 @app.route('/visualize', methods=['POST'])
 def visualize():
+    # Récupérer les données JSON envoyées par le client
     data = request.get_json()
 
-    # Charger les données du graphe
     edges = data['edges']
     initial_infected = data['initial_infected']
     node_thresholds = data['node_thresholds']
@@ -195,16 +192,13 @@ def visualize():
     for src, dst, weight in edges:
         G.add_edge(src, dst, weight=weight)
 
-    # Appliquer la fonction linear_threshold
+    # Déterminer les nœuds infectés
     infected_nodes = linear_threshold(G, initial_infected, node_thresholds)
 
-    # Positionner les nœuds
+    # Générer le graphe avec NetworkX et Matplotlib
     pos = nx.spring_layout(G)
-
-    # Créer les couleurs pour les nœuds
     node_colors = ['red' if node in infected_nodes else 'skyblue' for node in G.nodes]
 
-    # Dessiner le graphe
     plt.figure(figsize=(8, 6))
     nx.draw(
         G,
@@ -218,14 +212,60 @@ def visualize():
     )
     plt.title("Propagation des menaces dans le réseau")
 
-    # Enregistrer le graphique sur un chemin spécifique
-    image_path = 'graph_images/graph_image.png'  # Remplacez 'path/to/your/directory' par le chemin souhaité
-    plt.savefig(image_path)
+    # Encoder l'image en Base64
+    from io import BytesIO
+    buffer = BytesIO()
+    plt.savefig(buffer, format="png")
     plt.close()
-   # Générer une image ou charger un fichier existant
-  
-    return send_file(image_path, mimetype='image/png')
-    
+    buffer.seek(0)
+    image_base64 = base64.b64encode(buffer.read()).decode('utf-8')
+    buffer.close()
+
+    # Sauvegarder dans MongoDB
+    image_data = {
+        'name': 'graph_image.png',
+        'image_base64': image_base64
+    }
+    collection.insert_one(image_data)
+
+    return jsonify({"message": "Image saved successfully.", "image_base64": image_base64})
+
+# Fonction de propagation (exemple simplifié, à personnaliser selon vos besoins)
+def linear_threshold(G, initial_infected, node_thresholds):
+    # Exemple de logique simplifiée pour la propagation
+    infected = set(initial_infected)
+    for node in G.nodes:
+        if node not in infected and G.degree[node] > node_thresholds.get(node, 1):
+            infected.add(node)
+    return infected
+
+@app.route('/upload', methods=['POST'])
+def upload_image():
+    try:
+        # Récupérer les données de l'image du corps de la requête
+        data = request.get_json()
+        if 'image' not in data:
+            return jsonify({"message": "Missing 'image' field in the request body."}), 400
+        
+        # Décoder l'image encodée en Base64
+        image_data = base64.b64decode(data['image'])
+        
+        # Convertir les données binaires en PNG avec Pillow
+        image = Image.open(io.BytesIO(image_data))
+        output = io.BytesIO()
+        image.save(output, format="PNG")
+        output.seek(0)
+
+        # Enregistrer l'image dans MongoDB
+        image_record = {"image": output.getvalue()}
+        result = collection.insert_one(image_record)
+
+        # Retourner l'image en réponse
+        output.seek(0)  # Réinitialiser le pointeur pour lecture
+        return send_file(output, mimetype='image/png')
+    except Exception as e:
+        traceback.print_exc()  # Pour débogage
+        return jsonify({"message": "An error occurred while processing the image.", "error": str(e)}), 400
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0",debug=True)
