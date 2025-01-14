@@ -96,7 +96,7 @@ Vous devez disposer d'une clé API valide d'OpenAI.
 ## Membres de l'Équipe
 
 - **Bolif Khouloud**  
-  - Tâches : Risk Assessment and Governance, back-end  ,front-end .
+  - Tâches : Risk Assessment and Governance, back-end   .
 
 
 - **Khaoula El Bannouri**  
