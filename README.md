@@ -119,7 +119,9 @@ Lien pour d'autres projets
 
 https://github.com/Ayoubto/Front-chat
 https://github.com/KhouloudBolif/chatbot-authService
+https://github.com/khaoulaelBannouri65/model_menace
 https://github.com/elbourkadi/L_diffusion_model.git
+
 https://huggingface.co/abderrazzak-ELBOURKADI13/latente_diffusion
   
     
