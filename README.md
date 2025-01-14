@@ -6,8 +6,8 @@ Ce projet consiste à développer un chatbot de sécurité qui répond aux besoi
 Ce projet a été réalisé par :
 - **Bolif Khouloud**
 - **El Bannouri Khaoula**
-- **Abderrazzak EL Bourkadi**
-- **Ayoub ET-Toubi**
+- **Abderrazzak el Bourkadi**
+- **Ayoub Touybi**
   
 
 
@@ -92,12 +92,35 @@ Vous devez disposer d'une clé API valide d'OpenAI.
     docker-compose up 
 
     
+# Équipe et Répartition des Tâches
+## Membres de l'Équipe
+
+- **Bolif Khouloud**  
+  - Tâches : Risk Assessment and Governance, back-end  ,front-end .
+
+
+- **Khaoula El Bannouri**  
+  - Tâches :Threat Diffusion Model and Threat Graph API.  
+
+
+- **Ayoub touibi**  
+    
+  - Tâches : Risk Assessment and Governance,front-end.  
+
+- **abderrazzak ELBOURKADI**  
+   
+  - Tâches : Image Diffusion Model and Image API.  
 
  
 
 ---
 
+Lien pour d'autres projets
 
+https://github.com/Ayoubto/Front-chat
+https://github.com/KhouloudBolif/chatbot-authService
+https://github.com/elbourkadi/L_diffusion_model.git
+https://huggingface.co/abderrazzak-ELBOURKADI13/latente_diffusion
   
     
      
