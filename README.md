@@ -7,7 +7,7 @@ Ce projet a été réalisé par :
 - **Bolif Khouloud**
 - **El Bannouri Khaoula**
 - **Abderrazzak el Bourkadi**
-- **Ayoub Touybi**
+- **Ayoub ET-Toubi**
   
 
 
