@@ -115,14 +115,13 @@ Vous devez disposer d'une clé API valide d'OpenAI.
 
 ---
 
-Lien pour d'autres projets
+Lien pour d'autres services 
 
-https://github.com/Ayoubto/Front-chat
-https://github.com/KhouloudBolif/chatbot-authService
-https://github.com/khaoulaelBannouri65/model_menace
-https://github.com/elbourkadi/L_diffusion_model.git
-
-https://huggingface.co/abderrazzak-ELBOURKADI13/latente_diffusion
+Front : https://github.com/Ayoubto/Front-chat
+Service d'authentification : https://github.com/KhouloudBolif/chatbot-authService
+service de Model de Graph : https://github.com/khaoulaelBannouri65/model_menace
+service de Model de generation d'image : https://github.com/elbourkadi/L_diffusion_model.git
+model importer de Gen image : https://huggingface.co/abderrazzak-ELBOURKADI13/latente_diffusion
   
     
      
